@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<ui:composition template="index.xhtml">
+	<ui:define name="content">
+
+	<h1 style="margin: 20px 0px 0px 20px;">Cadastro Professores</h1>
+
+		<h:form id="frm" style="margin-top:20px;">
+
+			<p:messages id="principal" showIcon="true"
+				style="margin: 20px 20px 0px 20px;" autoUpdate="false"/>
+
+			<p:toolbar id="toolbar" style="margin:5px 20px 0px 20px;">
+				<f:facet name="left">
+
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						actionListener="#{professorBean.novoProfessor}" style="font-size:15px;"
+						process="@this" update="dialogo-professor"
+						oncomplete="PF('professor-dialogo').show()">
+						<p:resetInput target="dialogo-professor" />
+					</p:commandButton>
+
+					<span class=" ui-separator ui-icon ui-icon-grip-dotted-vertical"></span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar"
+						disabled="#{professorBean.profSelecionado==null}"
+						style="font-size:15px;" process="@this" update="dialogo-professor2"
+						oncomplete="PF('professor-dialogo2').show()">
+						<p:resetInput target="dialogo-professor2" />
+						<f:setPropertyActionListener value="#{professorBean.profSelecionado}" target="#{professorBean.prof}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" style="font-size:15px;" title="Remover"
+						disabled="#{professorBean.profSelecionado==null}" process="@this" actionListener="#{professorBean.remover}"
+						update="tabela-professor toolbar">
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão" message="Tem certeza que deseja excuir o aluno?"/>
+					</p:commandButton>
+
+
+					<p:commandButton icon="ui-icon-arrowstop-1-s" title="Exportar para excel"
+						style="font-size:15px;" immediate="true" ajax="false">
+						<p:dataExporter type="xls" target="tabela-professor" fileName="professores"/>
+					</p:commandButton>
+
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable id="tabela-professor" paginator="true" 
+				paginatorAlwaysVisible="true" value="#{professorBean.profs}" var="lista"
+				selection="#{professorBean.profSelecionado}" selectionMode="single" rowKey="#{lista.rp}"
+				emptyMessage="Nenhum registro encontrado" rows="7"
+				paginatorPosition="bottom" style="margin:0px 20px 20px 20px;text-align:center;">
+				<p:ajax event="rowSelect" update=":frm:toolbar"/>
+				<p:ajax event="rowUnselect" update=":frm:toolbar"/>
+
+				<p:column headerText="ID" width="40">
+					<h:outputText value="#{lista.rp}" />
+				</p:column>
+
+				<p:column headerText="NOME">
+					<h:outputText value="#{lista.nome}" />
+				</p:column>
+
+				<p:column headerText="EMAIL">
+					<h:outputText value="#{lista.email}" />
+				</p:column>
+
+				<p:column headerText="TELEFONE">
+					<h:outputText value="#{lista.telefone}" />
+				</p:column>
+
+				<p:column headerText="DATA DE NASCIMENTO" width="140">
+					<h:outputText value="#{lista.data.time}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="TIPO USUÁRIO" width="80">
+					<h:outputText value="#{lista.tipoUsuario}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<p:dialog id="dialogo-professor" widgetVar="professor-dialogo"
+				header="Novo Professor" resizable="false" modal="true"
+				closeOnEscape="true">
+				
+				<p:messages id="valida-professor" autoUpdate="true" />
+				<p:defaultCommand target="salvar" scope="dialogo-professor"/>
+				
+				<h:panelGrid id="professor-entrada-dados" columns="2">
+									
+					<p:outputLabel for="nome" value="Nome" />
+					<p:inputText id="nome" value="#{professorBean.prof.nome}"/>
+						
+					<p:outputLabel for="email" value="Email" />
+					<p:inputText id="email" value="#{professorBean.prof.email}"/>
+						
+					<p:outputLabel for="telefone" value="Telefone" />
+					<p:inputMask mask="(99) 9999-9999" id="telefone"
+						value="#{professorBean.prof.telefone}"/>
+						
+					<p:outputLabel for="dataNasc" value="Data de nascimento" />
+					<p:calendar id="dataNasc" pattern="dd/MM/yyyy" mask="99/99/9999"
+						value="#{professorBean.prof.data}">
+						<f:converter converterId="converteData"></f:converter>
+					</p:calendar>
+					
+					<p:outputLabel for="senha" value="Senha" />
+					<p:password id="senha" value="#{professorBean.prof.senha}"
+						match="confirmaSenha" goodLabel="Média" weakLabel="Baixa"
+						strongLabel="Forte" promptLabel="Nivel da senha" feedback="true"/>
+						
+					<p:outputLabel for="confirmaSenha" value="Confirmar senha" />
+					<p:password id="confirmaSenha" value="#{professorBean.prof.senha}" />
+						
+				</h:panelGrid>
+				
+				<p:separator style="margin:10px;" />
+				
+				<p:commandButton id="salvar" value="Salvar" actionListener="#{professorBean.salvar}"
+					process="@this dialogo-professor" update="@this tabela-professor"
+					oncomplete="PF('professor-dialogo').hide()">
+				</p:commandButton>
+				
+				<p:commandButton value="Cancelar"
+					oncomplete="PF('professor-dialogo').hide()">
+					<p:resetInput target="dialogo-professor"></p:resetInput>
+				</p:commandButton>
+				
+			</p:dialog>
+			
+			<p:dialog id="dialogo-professor2" widgetVar="professor-dialogo2"
+				header="Edição professor" resizable="false" modal="true"
+				closeOnEscape="true">
+				
+				<p:messages id="valida-professor2" autoUpdate="true" />
+				<p:defaultCommand target="salvar2" scope="dialogo-professor2"/>
+				
+				<h:panelGrid id="professor-entrada-dados2" columns="2">
+				
+					<p:outputLabel for="enome" value="Nome" />
+					<p:inputText id="enome" value="#{professorBean.prof.nome}"/>
+						
+					<p:outputLabel for="eemail" value="Email" />
+					<p:inputText id="eemail" value="#{professorBean.prof.email}"/>
+						
+					<p:outputLabel for="etelefone" value="Telefone" />
+					<p:inputMask mask="(99) 9999-9999" id="etelefone"
+						value="#{professorBean.prof.telefone}"/>
+						
+					<p:outputLabel for="edataNasc" value="Data de nascimento" />
+					<p:calendar id="edataNasc" pattern="dd/MM/yyyy" mask="99/99/9999"
+						value="#{professorBean.prof.data}">
+						<f:converter converterId="converteData"></f:converter>
+					</p:calendar>
+						
+				</h:panelGrid>
+				
+				<p:separator style="margin:10px;" />
+				
+				<p:commandButton id="salvar2" value="Salvar" actionListener="#{professorBean.salvar}"
+					process="@this dialogo-professor2" update="@this tabela-professor"
+					oncomplete="PF('professor-dialogo2').hide()">
+				</p:commandButton>
+				
+				<p:commandButton value="Cancelar"
+					oncomplete="PF('professor-dialogo2').hide()">
+					<p:resetInput target="dialogo-professoro2"></p:resetInput>
+				</p:commandButton>
+				
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+</html>

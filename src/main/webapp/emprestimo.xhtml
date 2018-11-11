@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+<ui:composition template="index.xhtml">
+	<ui:define name="content">
+
+		<h1 style="margin: 20px 0px 0px 20px;">Empréstimos</h1>
+
+		<h:form style="margin-top:20px;">
+		
+		<p:toolbar style="margin:5px 20px 0px 20px;">
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						actionListener="#{alunoBean.novoAluno}" style="font-size:15px;"
+						process="@this" update="tabela-emprestimo"
+						oncomplete="PF('aluno-dialogo').show()">
+						<p:resetInput target="dialogo-aluno" />
+					</p:commandButton>
+					
+					<p:commandButton icon="ui-icon-pencil" style="font-size:15px;">
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-arrowstop-1-s"
+						style="font-size:15px;">
+					</p:commandButton>
+
+				</f:facet>
+			</p:toolbar>
+			
+			<h:panelGrid columns="2" style="margin:10px 0px 0px 20px;">
+				<p:inputText placeholder="Pesquisar por status..."/>
+				<p:commandButton icon="ui-icon-search"/>
+			</h:panelGrid>
+
+			<p:dataTable id="tabela-emprestimo" paginator="true"
+				paginatorAlwaysVisible="true"
+				emptyMessage="Nenhum registro encontrado" rows="10"
+				paginatorPosition="bottom" style="margin:20px;">
+
+				<p:column headerText="CÓDIGO">
+
+				</p:column>
+
+				<p:column headerText="SOLICITANTE">
+
+				</p:column>
+
+				<p:column headerText="CÓDIGO ITEM">
+
+				</p:column>
+
+				<p:column headerText="ITEM">
+
+				</p:column>
+
+				<p:column headerText="DATA DE SOLICITAÇÃO">
+
+				</p:column>
+
+				<p:column headerText="DATA DE DEVOLUÇÃO">
+
+				</p:column>
+				
+				<p:column headerText="STATUS">
+
+				</p:column>
+
+			</p:dataTable>
+			
+			<p:dialog id="dialogo-aluno" widgetVar="aluno-dialogo"
+				header="Novo aluno" resizable="false" modal="true"
+				closeOnEscape="true">
+				
+				<p:messages id="valida-aluno" autoUpdate="true" />
+				<p:defaultCommand target="salvar" scope="dialogo-aluno"/>
+				
+				<h:panelGrid id="aluno-entrada-dados" columns="2">
+				
+					<p:outputLabel for="curso" value="Curso"/>
+					<p:selectOneMenu id="curso" value="#{alunoBean.aluno.curso}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{alunoBean.cursos}" var="tipo"
+							itemLabel="#{tipo.descricao}" itemValue="#{tipo.descricao}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel for="nome" value="Nome" />
+					<p:inputText id="nome" value="#{alunoBean.aluno.nome}"/>
+						
+					<p:outputLabel for="email" value="Email" />
+					<p:inputText id="email" value="#{alunoBean.aluno.email}"/>
+						
+					<p:outputLabel for="telefone" value="Telefone" />
+					<p:inputMask mask="(99) 9999-9999" id="telefone"
+						value="#{alunoBean.aluno.telefone}"/>
+						
+					<p:outputLabel for="dataNasc" value="Data de nascimento" />
+					<p:calendar id="dataNasc" pattern="dd/MM/yyyy" mask="99/99/9999"
+						value="#{alunoBean.aluno.data}">
+						<f:converter converterId="converteData"></f:converter>
+					</p:calendar>
+					
+					<p:outputLabel for="senha" value="Senha" />
+					<p:password id="senha" value="#{alunoBean.aluno.senha}"
+						match="confirmaSenha" goodLabel="Média" weakLabel="Baixa"
+						strongLabel="Forte" promptLabel="Nivel da senha" feedback="true"/>
+						
+					<p:outputLabel for="confirmaSenha" value="Confirmar senha" />
+					<p:password id="confirmaSenha" value="#{alunoBean.aluno.senha}" />
+						
+				</h:panelGrid>
+				
+				<p:separator style="margin:10px;" />
+				
+				<p:commandButton id="salvar" value="Salvar" actionListener="#{alunoBean.salvar}"
+					process="@this dialogo-aluno" update="@this tabela-emprestimo"
+					oncomplete="PF('aluno-dialogo').hide()">
+				</p:commandButton>
+				
+				<p:commandButton value="Cancelar"
+					oncomplete="PF('aluno-dialogo').hide()">
+					<p:resetInput target="dialogo-aluno"></p:resetInput>
+				</p:commandButton>
+				
+			</p:dialog>
+
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+
+</html>

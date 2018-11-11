@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<!-- 
+		Replace path to template, title, header and body
+		with actual data.
+	 -->
+<ui:composition template="index.xhtml">
+	<ui:define name="content">
+
+		<h1 style="margin: 20px 0px 0px 20px;">Cadastro Itens</h1>
+
+		<h:form id="frm" style="margin-top:20px;">
+
+			<p:messages id="principal" showIcon="true"
+				style="margin: 20px 20px 0px 20px;" autoUpdate="false"/>
+
+			<p:toolbar id="toolbar" style="margin:5px 20px 0px 20px;">
+				<f:facet name="left">
+
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						actionListener="#{itemBean.novoItem}" style="font-size:15px;"
+						process="@this" update="dialogo-item"
+						oncomplete="PF('item-dialogo').show()">
+						<p:resetInput target="dialogo-item" />
+					</p:commandButton>
+
+					<span class=" ui-separator ui-icon ui-icon-grip-dotted-vertical"></span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar"
+						disabled="#{itemBean.itemSelecionado==null}"
+						style="font-size:15px;" process="@this" update="dialogo-item2"
+						oncomplete="PF('item-dialogo2').show()">
+						<p:resetInput target="dialogo-item2" />
+						<f:setPropertyActionListener value="#{itemBean.itemSelecionado}" target="#{itemBean.item}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" style="font-size:15px;" title="Remover"
+						disabled="#{itemBean.itemSelecionado==null}" process="@this" actionListener="#{itemBean.remover}"
+						update="tabela-item toolbar">
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão" message="Tem certeza que deseja excuir o item?"/>
+					</p:commandButton>
+
+
+					<p:commandButton icon="ui-icon-arrowstop-1-s" title="Exportar para excel"
+						style="font-size:15px;" immediate="true" ajax="false">
+						<p:dataExporter type="xls" target="tabela-item" fileName="itens"/>
+					</p:commandButton>
+
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable id="tabela-item" paginator="true" 
+				paginatorAlwaysVisible="true" value="#{itemBean.itens}" var="lista"
+				selection="#{itemBean.itemSelecionado}" selectionMode="single" rowKey="#{lista.codigo}"
+				emptyMessage="Nenhum registro encontrado" rows="7"
+				paginatorPosition="bottom" style="margin:0px 20px 20px 20px;text-align:center;">
+				<p:ajax event="rowSelect" update=":frm:toolbar"/>
+				<p:ajax event="rowUnselect" update=":frm:toolbar"/>
+
+				<p:column headerText="CÓDIGO" width="70">
+					<h:outputText value="#{lista.codigo}" />
+				</p:column>
+
+				<p:column headerText="TITULO">
+					<h:outputText value="#{lista.titulo}" />
+				</p:column>
+
+				<p:column headerText="AUTOR">
+					<h:outputText value="#{lista.autor}" />
+				</p:column>
+
+				<p:column headerText="EDITORA">
+					<h:outputText value="#{lista.editora}" />
+				</p:column>
+
+				<p:column headerText="EDIÇÃO" width="140">
+					<h:outputText value="#{lista.edicao}"/>
+				</p:column>
+
+				<p:column headerText="STATUS" width="80">
+					<h:outputText value="#{lista.status}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<p:dialog id="dialogo-item" widgetVar="item-dialogo"
+				header="Novo Item" resizable="false" modal="true"
+				closeOnEscape="true">
+				
+				<p:messages id="valida-item" autoUpdate="true" />
+				<p:defaultCommand target="salvar" scope="dialogo-item"/>
+				
+				<h:panelGrid id="item-entrada-dados" columns="2">
+									
+					<p:outputLabel for="titulo" value="Titulo" />
+					<p:inputText id="titulo" value="#{itemBean.item.titulo}"/>
+						
+					<p:outputLabel for="autor" value="Autor" />
+					<p:inputText id="autor" value="#{itemBean.item.autor}"/>
+						
+					<p:outputLabel for="editora" value="Editora" />
+					<p:inputText id="editora" value="#{itemBean.item.editora}"/>
+						
+					<p:outputLabel for="edicao" value="Edição" />
+					<p:selectOneMenu id="edicao" value="#{itemBean.item.edicao}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{itemBean.edicoes}" var="tipo"
+							itemLabel="#{tipo.descricao}" itemValue="#{tipo.descricao}" />
+					</p:selectOneMenu>
+						
+				</h:panelGrid>
+				
+				<p:separator style="margin:10px;" />
+				
+				<p:commandButton id="salvar" value="Salvar" actionListener="#{itemBean.salvar}"
+					process="@this dialogo-item" update="@this tabela-item"
+					oncomplete="PF('item-dialogo').hide()">
+				</p:commandButton>
+				
+				<p:commandButton value="Cancelar"
+					oncomplete="PF('item-dialogo').hide()">
+					<p:resetInput target="dialogo-item"></p:resetInput>
+				</p:commandButton>
+				
+			</p:dialog>
+			
+			<p:dialog id="dialogo-item2" widgetVar="item-dialogo2"
+				header="Edição item" resizable="false" modal="true"
+				closeOnEscape="true">
+				
+				<p:messages id="valida-item2" autoUpdate="true" />
+				<p:defaultCommand target="salvar2" scope="dialogo-item2"/>
+				
+				<h:panelGrid id="item-entrada-dados2" columns="2">
+					
+					<p:outputLabel value="Código" />
+					<p:inputText id="codigo" value="#{itemBean.item.codigo}" disabled="true" size="10"/>
+					
+					<p:outputLabel for="etitulo" value="Titulo" />
+					<p:inputText id="etitulo" value="#{itemBean.item.titulo}"/>
+						
+					<p:outputLabel for="eautor" value="Autor" />
+					<p:inputText id="eautor" value="#{itemBean.item.autor}"/>
+						
+					<p:outputLabel for="eeditora" value="Editora" />
+					<p:inputText id="eeditora" value="#{itemBean.item.editora}"/>
+						
+					<p:outputLabel for="eedicao" value="Edição" />
+					<p:selectOneMenu id="eedicao" value="#{itemBean.item.edicao}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{itemBean.edicoes}" var="tipo"
+							itemLabel="#{tipo.descricao}" itemValue="#{tipo.descricao}" />
+					</p:selectOneMenu>
+						
+				</h:panelGrid>
+				
+				<p:separator style="margin:10px;" />
+				
+				<p:commandButton id="salvar2" value="Salvar" actionListener="#{itemBean.salvar}"
+					process="@this dialogo-item2" update="@this tabela-item"
+					oncomplete="PF('item-dialogo2').hide()">
+				</p:commandButton>
+				
+				<p:commandButton value="Cancelar"
+					oncomplete="PF('item-dialogo2').hide()">
+					<p:resetInput target="dialogo-item2"></p:resetInput>
+				</p:commandButton>
+				
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+
+</html>

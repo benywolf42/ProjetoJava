@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+	<meta charset="UTF-8" />
+	<h:outputStylesheet library="CSS" name="style.css"/>
+	<title>Biblioteca Impacta</title>
+</h:head>
+
+<h:body>
+
+	<header>Bem Vindo: #{loginBean.usuarioLogado}
+		<center>
+			<a href="index.xhtml">
+				<h:graphicImage styleClass="logo" library="Imagens" name="impacta.png" />
+			</a>
+		</center>
+	</header>
+
+	<h:form>
+		<p:menubar>
+			<p:menuitem value="Alunos" icon="ui-icon-person"
+				style="font-size:15px;" url="alunos.xhtml" disabled="#{funcionarioBean.botao[0] == 'N'}">
+			</p:menuitem>
+			
+			<p:menuitem value="Funcionários" icon="ui-icon-person"
+				style="font-size:15px;" url="funcionarios.xhtml" disabled="#{funcionarioBean.botao[1] == 'N'}">
+			</p:menuitem>
+			
+				
+			<p:menuitem value="Professores" icon="ui-icon-bookmark"
+				style="font-size:15px;" url="professores.xhtml">
+			</p:menuitem>
+			
+			<p:menuitem value="Empréstimos" icon="ui-icon-note"
+				style="font-size:15px;" url="emprestimo.xhtml">
+			</p:menuitem>
+			
+			<p:menuitem value="Itens" icon="ui-icon-clipboard"
+				style="font-size:15px;" url="itens.xhtml">
+			</p:menuitem>
+
+			<f:facet name="options">
+				<p:menuButton value="Opções" icon="ui-icon-gear" style="font-size:15px;">
+					<p:menuitem value="Usuário" icon="ui-icon-wrench"
+						style="font-size:15px;">
+					</p:menuitem>
+					<p:menuitem value="Sair" icon="ui-icon-power"
+						style="font-size:15px;" actionListener="#{loginBean.logoff}">
+					</p:menuitem>
+				</p:menuButton>
+			</f:facet>
+		</p:menubar>
+	</h:form>
+	<ui:insert name="content">
+	
+	</ui:insert>
+
+	<footer>
+		<h4>FIT - Impacta Tecnologia, Copyrigth &#169;</h4>
+		<h5>Todos os direitos reservados.</h5>
+	</footer>
+	
+	<h:form>
+		<p:confirmDialog global="true">
+			<p:commandButton type="button" value="Não" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+			<p:commandButton type="button" value="Sim" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+		</p:confirmDialog>
+	</h:form>
+
+</h:body>
+
+</html>

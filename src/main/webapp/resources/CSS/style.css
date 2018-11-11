@@ -1,0 +1,28 @@
+@CHARSET "UTF-8";
+
+*{
+	padding:0;
+	margin: 0;
+	font-family:helvetica;
+}
+
+.ui-widget, .ui-widget .ui-widget,.ui-state-default {
+    font-size: 90% !important;
+}
+
+header {
+	background: #D3D4D8;
+}
+
+.logo{
+	width:100px; 
+	height:60px;
+	margin:5px;
+}
+
+footer{
+	padding:15px;
+	border-top:1px solid black;
+	text-align:center;
+	margin-top:10px;
+}

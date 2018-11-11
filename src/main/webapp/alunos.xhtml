@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="index.xhtml">
+	<ui:define name="content">
+
+		<h1 style="margin: 20px 0px 0px 20px;">Cadastro Alunos</h1>
+
+		<h:form id="frm" style="margin-top:20px;">
+
+			<p:messages id="principal" showIcon="true"
+				style="margin: 20px 20px 0px 20px;" autoUpdate="false"/>
+
+			<p:toolbar id="toolbar" style="margin:5px 20px 0px 20px;">
+				<f:facet name="left">
+
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						actionListener="#{alunoBean.novoAluno}" style="font-size:15px;"
+						process="@this" update="dialogo-aluno"
+						oncomplete="PF('aluno-dialogo').show()">
+						<p:resetInput target="dialogo-aluno" />
+					</p:commandButton>
+
+					<span class=" ui-separator ui-icon ui-icon-grip-dotted-vertical"></span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar"
+						disabled="#{alunoBean.alunoSelecionado==null}"
+						style="font-size:15px;" process="@this" update="dialogo-aluno2"
+						oncomplete="PF('aluno-dialogo2').show()">
+						<p:resetInput target="dialogo-aluno2" />
+						<f:setPropertyActionListener value="#{alunoBean.alunoSelecionado}" target="#{alunoBean.aluno}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" style="font-size:15px;" title="Remover"
+						disabled="#{alunoBean.alunoSelecionado==null}" process="@this" actionListener="#{alunoBean.remover}"
+						update="tabela-aluno toolbar">
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão" message="Tem certeza que deseja excuir o aluno?"/>
+					</p:commandButton>
+
+
+					<p:commandButton icon="ui-icon-arrowstop-1-s" title="Exportar para excel"
+						style="font-size:15px;" immediate="true" ajax="false">
+						<p:dataExporter type="xls" target="tabela-aluno" fileName="alunos"/>
+					</p:commandButton>
+
+				</f:facet>
+			</p:toolbar>
+			
+			<h:panelGrid columns="2" style="margin:10px 0px 0px 20px;">
+				<p:inputText placeholder="Pesquisar por status..."/>
+				<p:commandButton icon="ui-icon-search"/>
+			</h:panelGrid>
+
+			<p:dataTable id="tabela-aluno" paginator="true" 
+				paginatorAlwaysVisible="true" value="#{alunoBean.alunos}" var="lista"
+				selection="#{alunoBean.alunoSelecionado}" selectionMode="single" rowKey="#{lista.ra}"
+				emptyMessage="Nenhum registro encontrado" rows="7"
+				paginatorPosition="bottom" style="margin:0px 20px 20px 20px;text-align:center;">
+				<p:ajax event="rowSelect" update=":frm:toolbar"/>
+				<p:ajax event="rowUnselect" update=":frm:toolbar"/>
+
+				<p:column headerText="RA" width="40">
+					<h:outputText value="#{lista.ra}" />
+				</p:column>
+
+				<p:column headerText="NOME">
+					<h:outputText value="#{lista.nome}" />
+				</p:column>
+
+				<p:column headerText="EMAIL">
+					<h:outputText value="#{lista.email}" />
+				</p:column>
+
+				<p:column headerText="TELEFONE">
+					<h:outputText value="#{lista.telefone}" />
+				</p:column>
+
+				<p:column headerText="DATA DE NASCIMENTO" width="140">
+					<h:outputText value="#{lista.data.time}">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+				<p:column headerText="CURSO" width="60">
+					<h:outputText value="#{lista.curso}"/>
+				</p:column>
+
+				<p:column headerText="TIPO USUÁRIO" width="80">
+					<h:outputText value="#{lista.tipoUsuario}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<p:dialog id="dialogo-aluno" widgetVar="aluno-dialogo"
+				header="Novo aluno" resizable="false" modal="true"
+				closeOnEscape="true">
+				
+				<p:messages id="valida-aluno" autoUpdate="true" />
+				<p:defaultCommand target="salvar" scope="dialogo-aluno"/>
+				
+				<h:panelGrid id="aluno-entrada-dados" columns="2">
+				
+					<p:outputLabel for="curso" value="Curso"/>
+					<p:selectOneMenu id="curso" value="#{alunoBean.aluno.curso}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{alunoBean.cursos}" var="tipo"
+							itemLabel="#{tipo.descricao}" itemValue="#{tipo.descricao}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel for="nome" value="Nome" />
+					<p:inputText id="nome" value="#{alunoBean.aluno.nome}"/>
+						
+					<p:outputLabel for="email" value="Email" />
+					<p:inputText id="email" value="#{alunoBean.aluno.email}"/>
+						
+					<p:outputLabel for="telefone" value="Telefone" />
+					<p:inputMask mask="(99) 9999-9999" id="telefone"
+						value="#{alunoBean.aluno.telefone}"/>
+						
+					<p:outputLabel for="dataNasc" value="Data de nascimento" />
+					<p:calendar id="dataNasc" pattern="dd/MM/yyyy" mask="99/99/9999"
+						value="#{alunoBean.aluno.data}">
+						<f:converter converterId="converteData"></f:converter>
+					</p:calendar>
+					
+					<p:outputLabel for="senha" value="Senha" />
+					<p:password id="senha" value="#{alunoBean.aluno.senha}"
+						match="confirmaSenha" goodLabel="Média" weakLabel="Baixa"
+						strongLabel="Forte" promptLabel="Nivel da senha" feedback="true"/>
+						
+					<p:outputLabel for="confirmaSenha" value="Confirmar senha" />
+					<p:password id="confirmaSenha" value="#{alunoBean.aluno.senha}" />
+						
+				</h:panelGrid>
+				
+				<p:separator style="margin:10px;" />
+				
+				<p:commandButton id="salvar" value="Salvar" actionListener="#{alunoBean.salvar}"
+					process="@this dialogo-aluno" update="@this tabela-aluno"
+					oncomplete="PF('aluno-dialogo').hide()">
+				</p:commandButton>
+				
+				<p:commandButton value="Cancelar"
+					oncomplete="PF('aluno-dialogo').hide()">
+					<p:resetInput target="dialogo-aluno"></p:resetInput>
+				</p:commandButton>
+				
+			</p:dialog>
+			
+			<p:dialog id="dialogo-aluno2" widgetVar="aluno-dialogo2"
+				header="Edição Aluno" resizable="false" modal="true"
+				closeOnEscape="true">
+				
+				<p:messages id="valida-aluno2" autoUpdate="true" />
+				<p:defaultCommand target="salvar" scope="dialogo-aluno2"/>
+				
+				<h:panelGrid id="aluno-entrada-dados2" columns="2">
+				
+					<p:outputLabel for="ecurso" value="Curso" />
+					<p:selectOneMenu id="ecurso" value="#{alunoBean.aluno.curso}">
+						<f:selectItem itemLabel="Selecione" itemValue="" />
+						<f:selectItems value="#{alunoBean.cursos}" var="tipo"
+							itemLabel="#{tipo.descricao}" itemValue="#{tipo.descricao}" />
+					</p:selectOneMenu>
+					
+					<p:outputLabel for="enome" value="Nome" />
+					<p:inputText id="enome" value="#{alunoBean.aluno.nome}"/>
+						
+					<p:outputLabel for="eemail" value="Email" />
+					<p:inputText id="eemail" value="#{alunoBean.aluno.email}"/>
+						
+					<p:outputLabel for="etelefone" value="Telefone" />
+					<p:inputMask mask="(99) 9999-9999" id="etelefone"
+						value="#{alunoBean.aluno.telefone}"/>
+						
+					<p:outputLabel for="edataNasc" value="Data de nascimento" />
+					<p:calendar id="edataNasc" pattern="dd/MM/yyyy" mask="99/99/9999"
+						value="#{alunoBean.aluno.data}">
+						<f:converter converterId="converteData"></f:converter>
+					</p:calendar>
+						
+				</h:panelGrid>
+				
+				<p:separator style="margin:10px;" />
+				
+				<p:commandButton id="salvar2" value="Salvar" actionListener="#{alunoBean.salvar}"
+					process="@this dialogo-aluno2" update="@this tabela-aluno"
+					oncomplete="PF('aluno-dialogo2').hide()">
+				</p:commandButton>
+				
+				<p:commandButton value="Cancelar"
+					oncomplete="PF('aluno-dialogo2').hide()">
+					<p:resetInput target="dialogo-aluno2"></p:resetInput>
+				</p:commandButton>
+				
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+
+</html>

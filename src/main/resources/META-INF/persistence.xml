@@ -11,7 +11,11 @@
 		<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" /> 
 		<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/biblioteca" />
 		<property name="javax.persistence.jdbc.user" value="root" /> 
+<<<<<<< HEAD
 		<property name="javax.persistence.jdbc.password" value="senha" /> 
+=======
+		<property name="javax.persistence.jdbc.password" value="Guga3290" /> 
+>>>>>>> 8d1160c2969be135078a98f41ecf11c47814f563
 		<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" /> 
 		<property name="hibernate.show_sql" value="true" /> 
 		<property name="hibernate.format_sql" value="true" /> 
